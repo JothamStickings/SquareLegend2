@@ -10,6 +10,9 @@ class Rope:
     def get_true_length(self):
         return math.sqrt((self.player.x-self.point[0])**2+(self.player.y-self.point[1])**2)
 
+    def shorten(self):
+        self.length -= 3
+
     def pull(self):
         if self.length <= 3:
             del self
@@ -22,6 +25,5 @@ class Rope:
             if stretch > 3:
                 stretch = 3
             multiplier = -stretch / distance
-            self.player.xspeed += 0.15 * vector[0] * multiplier
-            self.player.yspeed += 0.15 * vector[1] * multiplier
-            self.length -= 4
+            self.player.xspeed += 0.2 * vector[0] * multiplier
+            self.player.yspeed += 0.2 * vector[1] * multiplier

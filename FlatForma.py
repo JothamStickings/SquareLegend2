@@ -47,7 +47,6 @@ class Platform:
 
 platformlist = []
 
-
 def touching(ob1, ob2, width, height):
     if ob1.y >= ob2.y - 10 and ob2.x - 9 <= ob1.x <= ob2.x + width + 9:
         if 10 >= ob1.y - (ob2.y - 10) >= 0:
@@ -63,6 +62,12 @@ def touching(ob1, ob2, width, height):
             ob1.y += 1
     return None
 
+
+def touching_any(point, obj_list):
+    for obj in obj_list:
+        if obj.x < point[0] < obj.x + obj.width and obj.y < point[1] < obj.y + obj.height:
+            return True
+    return False
 
 player = Player()
 
@@ -89,13 +94,17 @@ grappling = False
 while not done:
     screen.fill(white)
 
+    if pygame.mouse.get_pressed(3)[2] and rope is not None:
+        rope.shorten()
+
     if pygame.mouse.get_pressed(3)[0]:
+        pos = pygame.mouse.get_pos()
         if rope is None:
-            grappling = True
-            pos = pygame.mouse.get_pos()
-            rope = Rope(player, pos)
-            Ground = False
-            player.y -= 2
+            if touching_any(pos, platformlist):
+                grappling = True
+                rope = Rope(player, pos)
+                Ground = False
+                player.y -= 2
         else:
             pygame.draw.line(screen, black, rope.point, (player.x, player.y))
             rope.pull()
