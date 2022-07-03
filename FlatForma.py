@@ -100,6 +100,7 @@ while not done:
         rope = None
 
     if player.y >= SCREEN_HEIGHT-50:
+        player.x -= 1
         Ground = True
         player.y = SCREEN_HEIGHT-50
     if player.x <= 10:
@@ -180,6 +181,12 @@ while not done:
     pygame.draw.rect(screen, black, (player.x - 10, player.y - 10, 20, 20))
 
     for platform in platform_list:
+
+        # move backwards
+        platform.x -= 1
+        if platform.x < -platform.width:
+            platform.x = SCREEN_WIDTH + 20
+
         pygame.draw.rect(screen, black, (platform.x, platform.y, platform.width, platform.height))
         for m in platform.move:
             if m[0] == "y":
@@ -204,6 +211,8 @@ while not done:
             if touch == "Top":
                 Ground = True
                 top = True
+
+                player.x -= 1
                 for m in platform.move:
                     if m[0] == "x":
                         if count % m[2] < m[2] / 2:

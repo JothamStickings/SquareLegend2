@@ -34,6 +34,7 @@ class Rope:
                 self.length += stretch/10
             
             # move point
+            self.point[0] -= 1
             for m in self.plat.move:
                 if m[0] == "y":
                     if count % m[2] < m[2] / 2:
