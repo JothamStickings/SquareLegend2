@@ -4,13 +4,15 @@ import pygame
 
 # initialise pygame
 from Rope import Rope
+from Player import Player
+from Platform import Platform
 
 pygame.init()
 pygame.mixer.init()
 
 # useful definitions
-SCREEN_WIDTH = 500
-SCREEN_HEIGHT = 500
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 700
 size = [SCREEN_WIDTH, SCREEN_HEIGHT]
 black = (0, 0, 0)
 white = (255, 255, 255)
@@ -22,30 +24,9 @@ blue = (0, 0, 255)
 screen = pygame.display.set_mode(size)
 screen.fill(white)
 pygame.display.set_caption("Flatforma")
-
 clock = pygame.time.Clock()
+platform_list = []
 
-
-class Player:
-    def __init__(self):
-        self.x = 400
-        self.y = 400
-        self.yspeed = 0
-        self.xspeed = 0
-
-
-class Platform:
-    def __init__(self, x, y, width, height, move=None):
-        if move is None:
-            move = []
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.move = move
-
-
-platformlist = []
 
 def touching(ob1, ob2, width, height):
     if ob1.y >= ob2.y - 10 and ob2.x - 9 <= ob1.x <= ob2.x + width + 9:
@@ -53,9 +34,9 @@ def touching(ob1, ob2, width, height):
             ob1.y = ob2.y - 10
             return "Top"
         if ob1.y <= ob2.y + height + 10:
-            if 6 >= ob1.x - (ob2.x - 10) >= 0:
+            if 10 >= ob1.x - (ob2.x - 10) >= 0:
                 return "rside"
-            if -6 <= ob1.x - (ob2.x + width + 10) <= 0:
+            if -10 <= ob1.x - (ob2.x + width + 10) <= 0:
                 return "lside"
         if ob1.y <= ob2.y + height + 10:
             ob1.yspeed *= -0.8
@@ -66,19 +47,25 @@ def touching(ob1, ob2, width, height):
 def touching_any(point, obj_list):
     for obj in obj_list:
         if obj.x < point[0] < obj.x + obj.width and obj.y < point[1] < obj.y + obj.height:
-            return True
-    return False
+            return True, obj
+    return False, None
 
 player = Player()
 
 p = Platform(280, 50, 20, 150)
-platformlist.append(p)
-d = Platform(125, 350, 100, 300, [("x", 0.75, 300), ("y", 1, -300), ("x", -0.75, 900)])
-platformlist.append(d)
+platform_list.append(p)
+# d = Platform(125, 350, 100, 300, [("x", 0.75, 300), ("y", 1, -300), ("x", -0.75, 900)])
+# platformlist.append(d)
+d = Platform(780, 34, 100, 50, [("x", 0.5, 300)])
+platform_list.append(d)
+d = Platform(560, 200, 150, 20, [])
+platform_list.append(d)
 d = Platform(-150, 270, 150, 30, [("x", -0.5, 600), ("x", 0.5, 300)])
-platformlist.append(d)
+platform_list.append(d)
 d = Platform(5, 300, 120, 20, [("y", -0.5, 900), ("y", 0.5, 300)])
-platformlist.append(d)
+platform_list.append(d)
+d = Platform(400, 300, 20, 400)
+platform_list.append(d)
 
 # Sets up the game loop that runs a frame of the game until done is True
 done = False
@@ -100,24 +87,24 @@ while not done:
     if pygame.mouse.get_pressed(3)[0]:
         pos = pygame.mouse.get_pos()
         if rope is None:
-            if touching_any(pos, platformlist):
+            touching_plat, plat = touching_any(pos, platform_list)
+            if touching_plat:
                 grappling = True
-                rope = Rope(player, pos)
+                rope = Rope(player, [pos[0], pos[1]], plat)
                 Ground = False
-                player.y -= 2
         else:
             pygame.draw.line(screen, black, rope.point, (player.x, player.y))
-            rope.pull()
+            rope.pull(count)
     else:
         grappling = False
         rope = None
 
-    if player.y >= 450:
+    if player.y >= SCREEN_HEIGHT-50:
         Ground = True
-        player.y = 450
+        player.y = SCREEN_HEIGHT-50
     if player.x <= 10:
         Lside = True
-    if player.x >= 490:
+    if player.x >= SCREEN_WIDTH-10:
         Rside = True
 
     for event in pygame.event.get():
@@ -138,7 +125,7 @@ while not done:
                 player.yspeed = -7
                 player.y -= 1
                 Ground = False
-                for platform in platformlist:
+                for platform in platform_list:
                     touch = touching(player, platform, platform.width, platform.height)
                     if touch == "Top":
                         for m in platform.move:
@@ -184,15 +171,15 @@ while not done:
             player.xspeed *= -0.5
         else:
             player.xspeed = 0
-    if player.x > 490:
-        player.x = 490
+    if player.x > SCREEN_WIDTH-10:
+        player.x = SCREEN_WIDTH-10
     if player.x < 10:
         player.x = 10
     player.x += player.xspeed
 
     pygame.draw.rect(screen, black, (player.x - 10, player.y - 10, 20, 20))
 
-    for platform in platformlist:
+    for platform in platform_list:
         pygame.draw.rect(screen, black, (platform.x, platform.y, platform.width, platform.height))
         for m in platform.move:
             if m[0] == "y":
@@ -206,12 +193,12 @@ while not done:
                 else:
                     platform.x += m[1]
 
-    pygame.draw.rect(screen, black, (0, 460, 500, 40))
+    pygame.draw.rect(screen, black, (0, SCREEN_HEIGHT-40, SCREEN_WIDTH, 40))
 
     top = False
     side = False
 
-    for platform in platformlist:
+    for platform in platform_list:
         touch = touching(player, platform, platform.width, platform.height)
         if not top:
             if touch == "Top":
