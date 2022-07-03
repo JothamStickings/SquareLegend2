@@ -100,9 +100,7 @@ while not done:
         rope = None
 
     if player.y >= SCREEN_HEIGHT-50:
-        player.x -= 1
-        Ground = True
-        player.y = SCREEN_HEIGHT-50
+        done = True
     if player.x <= 10:
         Lside = True
     if player.x >= SCREEN_WIDTH-10:
@@ -200,7 +198,7 @@ while not done:
                 else:
                     platform.x += m[1]
 
-    pygame.draw.rect(screen, black, (0, SCREEN_HEIGHT-40, SCREEN_WIDTH, 40))
+    pygame.draw.rect(screen, red, (0, SCREEN_HEIGHT-40, SCREEN_WIDTH, 40))
 
     top = False
     side = False
