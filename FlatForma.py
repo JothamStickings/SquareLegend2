@@ -111,17 +111,17 @@ while not done:
         if event.type == pygame.QUIT:
             done = True
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP and Rside and not Ground:
+            if (event.key == pygame.K_UP or event.key == pygame.K_w) and Rside and not Ground:
                 player.yspeed = -6
                 player.xspeed = -4
                 player.x -= 2
                 Rside = False
-            if event.key == pygame.K_UP and Lside and not Ground:
+            if (event.key == pygame.K_UP or event.key == pygame.K_w) and Lside and not Ground:
                 player.yspeed = -6
                 player.xspeed = 4
                 player.x += 2
                 Lside = False
-            if event.key == pygame.K_UP and Ground:
+            if (event.key == pygame.K_UP or event.key == pygame.K_w) and Ground:
                 player.yspeed = -7
                 player.y -= 1
                 Ground = False
@@ -136,17 +136,17 @@ while not done:
                                     player.xspeed += m[1]
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and not Lside and player.xspeed >= -3.6:
+    if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and not Lside and player.xspeed >= -3.6:
         if not Ground:
             player.xspeed -= 0.05
         else:
             player.xspeed -= 0.2
-    if keys[pygame.K_RIGHT] and not Rside and player.xspeed <= 3.6:
+    if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and not Rside and player.xspeed <= 3.6:
         if not Ground:
             player.xspeed += 0.05
         else:
             player.xspeed += 0.2
-    if not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT] and Ground:
+    if not (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and not (keys[pygame.K_LEFT] or keys[pygame.K_a]) and Ground:
         player.xspeed *= 0.95
 
     if not Ground:
@@ -161,12 +161,12 @@ while not done:
         else:
             player.yspeed = 0
     player.y += player.yspeed
-    if Lside and (not keys[pygame.K_RIGHT] or player.xspeed <= 0):
+    if Lside and (not (keys[pygame.K_RIGHT] or keys[pygame.K_d]) or player.xspeed <= 0):
         if grappling:
             player.xspeed *= -0.5
         else:
             player.xspeed = 0
-    if Rside and (not keys[pygame.K_LEFT] or player.xspeed >= 0):
+    if Rside and (not (keys[pygame.K_LEFT] or keys[pygame.K_a]) or player.xspeed >= 0):
         if grappling:
             player.xspeed *= -0.5
         else:
