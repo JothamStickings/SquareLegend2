@@ -156,7 +156,7 @@ while not done:
             player.yspeed += 0.2
     else:
         if grappling:
-            player.yspeed *= -0.5
+            pass
         else:
             player.yspeed = 0
     player.y += player.yspeed
