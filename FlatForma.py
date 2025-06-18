@@ -19,6 +19,7 @@ white = (255, 255, 255)
 red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
+frame_rate = 60
 
 # Screen setting up
 screen = pygame.display.set_mode(size)
@@ -98,6 +99,10 @@ while not done:
     else:
         grappling = False
         rope = None
+        frame_rate = 60
+
+    if pygame.mouse.get_pressed(3)[1] and rope is None:
+        frame_rate = 20
 
     if player.y >= SCREEN_HEIGHT-50:
         Ground = True
@@ -235,7 +240,7 @@ while not done:
         rope = None
 
     count += 1
-    clock.tick(60)
+    clock.tick(frame_rate)
 
     pygame.display.flip()
 
